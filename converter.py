@@ -5,6 +5,7 @@ Adds more readability and makes it work for a single csv file
 
 import pandas as pd
 import csv
+import json
 
 
 def read_input_file(input_file):
@@ -89,9 +90,9 @@ def process_logs(df):
 
 
 def convert_to_hevy_format(df):
-    """
-    Converts the DataFrame to Hevy's format with appropriate headers.
-    """
+    with open("exercises.json", "r") as file:
+        mapper = json.load(file)
+
     out = pd.DataFrame()
     out["Date"] = pd.to_datetime(df["mydate"]).apply(lambda x: x.isoformat())
     out["Workout Name"] = '"Workout"'
@@ -106,93 +107,9 @@ def convert_to_hevy_format(df):
     out["Workout Notes"] = '"Sorry🫡 Script: Imported from JeFit"'
     out["RPE"] = ""
 
-    mapper = {
-        '"Dumbbell Pullover"': "Pullover (Dumbbell)",
-        '"T Bar Row"': "T Bar Row",
-        '"Barbell Hip Thrust"': "Hip Thrust (Barbell)",
-        '"Dumbbell Seated Side Lateral Raise"': "Seated Lateral Raise (Dumbbell)",
-        '"Dumbbell Supine Cross Tricep Extension"': "Single Arm Tricep Extension (Dumbbell)",
-        '"Dumbbell Waiter Curls"': "Hammer Curl (Dumbbell)",
-        '"Cable Internal Rotation"': "Cable Internal Rotation",
-        '"Cable External Rotation"': "Cable External Rotation",
-        '"Machine Seated Calf Raise"': "Seated Calf Raise",
-        '"Machine Single-Leg Extension "': "Single Leg Extensions",
-        '"Machine Tricep Extension"': "Triceps Extension (Machine)",
-        '"Dumbbell Tricep Extension"': "Triceps Extension (Dumbbell)",
-        '"Dumbbell Alternating Hammer Curl"': "Hammer Curl (Dumbbell)",
-        '"Barbell Squat"': "Squat (Barbell)",
-        '"Dumbbell Alternating Incline Curl"': "Seated Incline Curl (Dumbbell)",
-        '"Dumbbell Wrist Curl (Palms Up)"': "Seated Palms Up Wrist Curl",
-        '"Cable High Pulley Tricep Extension"': "Triceps Extension (Cable)",
-        '"Machine Incline Chest Press"': "Incline Chest Press (Machine)",
-        '"Back Hyperextension"': "Back Extension (Weighted Hyperextension)",
-        '"Machine Single-Leg Curl"': "Seated Leg Curl (Machine)",
-        '"Cable One-Arm Tricep Pushdown (Reverse Grip)"': "Single Arm Triceps Pushdown (Cable)",
-        '"Machine Hip Adduction"': "Hip Adduction (Machine)",
-        '"Quadricep Stretch"': "Stretching",
-        '"90/90 Hamstring Stretch"': "Stretching",
-        '"Dumbbell One-Arm Front Raise"': "Front Raise (Dumbbell)",
-        '"Barbell Bench Press"': "Bench Press (Barbell)",
-        '"Dumbbell Incline Bench Press"': "Incline Bench Press (Dumbbell)",
-        '"Dumbbell Bench Press"': "Bench Press (Dumbbell)",
-        '"Dumbbell Incline Bench Row"': "Chest Supported Incline Row (Dumbbell)",
-        '"Barbell Incline Bench Press"': "Incline Bench Press (Barbell)",
-        '"Leverage Incline Chest Press"': "Incline Bench Press (Barbell)",
-        '"Cable Cross-Over"': "Cable Fly Crossovers",
-        '"EZ Bar Curl"': "EZ Bar Biceps Curl",
-        '"Cable Rope Triceps Pushdown"': "Triceps Rope Pushdown",
-        '"Dumbbell Concentration Curl"': "Concentration Curl",
-        '"Dumbbell Spider Curl"': "Spider Curl (Dumbbell)",
-        '"Barbell Seated Tricep Extension"': "Triceps Extension (Barbell)",
-        '"Cable Reverse Grip Tricep Kickback"': "Triceps Kickback (Cable)",
-        '"Barbell Bent-Over Row"': "Bent Over Row (Barbell)",
-        '"Weighted Pull-Up"': "Pull Up (Weighted)",
-        '"Barbell Upright Row"': "Upright Row (Barbell)",
-        '"Dip"': "Triceps Dip",
-        '"Dumbbell Seated Shoulder Press"': "Shoulder Press (Dumbbell)",
-        '"EZ Bar Tricep Extension"': "Triceps Extension (Barbell)",
-        '"Barbell Deep Squat"': "Squat (Barbell)",
-        '"Barbell Deadlift"': "Deadlift (Barbell)",
-        '"Barbell Stiff-Leg Deadlift"': "Straight Leg Deadlift",
-        '"Leg Press"': "Leg Press (Machine)",
-        '"Seated Leg Curl"': "Seated Leg Curl (Machine)",
-        '"Leg Extension"': "Leg Extension (Machine)",
-        '"Standing Calf Raise"': "Seated Calf Raise",
-        '"Sit-Up"': "Sit Up",
-        '"Pull-Up"': "Pull Up",
-        '"Cable Seated Row"': "Seated Cable Row - V Grip (Cable)",
-        '"Close Grip Front Lat Pulldown"': "Lat Pulldown - Close Grip (Cable)",
-        '"Cable Rope Face Pull"': "Face Pull",
-        '"Dumbbell One-Arm Row"': "Dumbbell Row",
-        '"Dumbbell Lateral Raise"': "Lateral Raise (Dumbbell)",
-        '"Barbell Front Squat"': "Front Squat",
-        '"Barbell Romanian Deadlift"': "Romanian Deadlift (Barbell)",
-        '"Machine Leg Extension"': "Leg Extension (Machine)",
-        '"Machine Leg Press"': "Leg Press (Machine)",
-        '"Machine Seated Leg Curl"': "Seated Leg Curl (Machine)",
-        '"Machine Calf Raise"': "Calf Press (Machine)",
-        '"Cable Front Lat Pulldown (Close Grip)"': '"Lat Pulldown - Close Grip (Cable)',
-        '"Cable Rope Tricep Pushdown"': "Triceps Rope Pushdown",
-        '"Cable Tricep Kickback (Reverse Grip)"': "Triceps Kickback (Cable)",
-        '"Dumbbell Incline Fly"': "Incline Chest Fly (Dumbbell)",
-        '"Barbell Preacher Curl"': "Preacher Curl (Barbell)",
-        '"Cable Lat Pulldown (Wide Grip)"': "Lat Pulldown (Cable)",
-        '"Hack Squat"': "Hack Squat",
-        '"Machine Leg Curl"': "Seated Leg Curl (Machine)",
-        '"Barbell Standing Calf Raise"': "Standing Calf Raise (Barbell)",
-        '"Barbell Seated Calf Raise"': "Seated Calf Raise",
-        '"Donkey Calf Raise"': "Seated Calf Raise",
-        '"Machine Leg Curl (Prone)"': "Seated Leg Curl (Machine)",
-        '"Machine Bench Press"': "Bench Press (Barbell)",
-        '"Push-Up"': "Push Up",
-        '"Resistance Band Row"': "Bent Over Row (Band)",
-        '"Plank"': "Plank",
-        '"Band Bicep Curl "': "Bicep Curl (Suspension)",
-        '"Crunch"': "Crunch",
-        '"Cable Tricep Pushdown (Rope)"': "Triceps Rope Pushdown",
-    }
-
-    out["Exercise Name"] = out["Exercise Name"].map(lambda x: mapper.get(x, x))
+    out["Exercise Name"] = out["Exercise Name"].map(
+        lambda x: mapper.get(x.strip('"'), x)
+    )
 
     return out
 
