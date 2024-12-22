@@ -27,3 +27,7 @@ pip install -r requirements.txt
 python3 JeFit2Hevy.py
 ```
 - The script will generate a file called "Hevy.csv" with the converted workouts
+
+### Coming soon (Todos):
+- Website to convert the Jefit file to Hevy (React with Client side conversion)
+- Add more exercises to the conversion
