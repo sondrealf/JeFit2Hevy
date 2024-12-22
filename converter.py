@@ -216,6 +216,6 @@ def main(input_file, output_file):
 
 
 if __name__ == "__main__":
-    input_file = "JeFit.csv"
-    output_file = "./output.csv"
+    input_file = "jefit.csv"
+    output_file = "./Hevy.csv"
     main(input_file, output_file)

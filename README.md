@@ -12,3 +12,18 @@ This [Link](https://workout-converter.fly.dev/) from the Gist Repository still w
 - Go to [https://www.jefit.com/my-jefit/settings](https://www.jefit.com/my-jefit/settings) (Remember to login)
 - Click on "Data Controls"
 - Click on "Export Data"
+
+### Hot to run python script:
+**Prerequisites**: Make sure you have python3 installed on your machine and have pip installed packages in the requirements.txt file.
+```bash
+pip install -r requirements.txt
+```
+
+- Clone this repository
+- Put the Jefit file in the same directory as the python script
+- Rename the Jefit file to "jefit.csv"
+- Run the following command:
+```bash
+python3 JeFit2Hevy.py
+```
+- The script will generate a file called "Hevy.csv" with the converted workouts
