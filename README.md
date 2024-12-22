@@ -24,7 +24,7 @@ pip install -r requirements.txt
 - Rename the Jefit file to "jefit.csv"
 - Run the following command:
 ```bash
-python3 JeFit2Hevy.py
+python3 converter.py
 ```
 - The script will generate a file called "Hevy.csv" with the converted workouts
 
