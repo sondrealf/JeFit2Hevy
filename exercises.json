@@ -81,5 +81,14 @@
   "Plank": "Plank",
   "Band Bicep Curl ": "Bicep Curl (Suspension)",
   "Crunch": "Crunch",
-  "Cable Tricep Pushdown (Rope)": "Triceps Rope Pushdown"
+  "Cable Tricep Pushdown (Rope)": "Triceps Rope Pushdown",
+  "Cable Deltoid Raise": "Single Arm Lateral Raise (Cable)",
+  "Dumbbell Seated Arnold Press": "Arnold Press (Dumbbell)",
+  "Machine Fly": "Chest Fly (Machine)",
+  "Machine Lat Pulldown": "Lat Pulldown (Machine)",
+  "Cable Mid Chest Crossover": "Cable Fly Crossovers",
+  "Machine Seated Row": "Seated Row (Machine)",
+  "Barbell Reverse Curl": "Reverse Curl (Barbell)",
+  "Barbell Curl (Close Grip)": "Bicep Curl (Barbell)",
+  "Cable Lateral Raise": "Single Arm Lateral Raise (Cable)"
 }

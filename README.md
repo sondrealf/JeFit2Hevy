@@ -6,7 +6,8 @@ Updates version from Github Gist: https://gist.github.com/jfmlima/8f5e2a50b557c3
 This [Link](https://workout-converter.fly.dev/) from the Gist Repository still works, but is now outdated and does include less workouts.
 
 ### Updates after Gist Repository:
-- 2024-12-12: Python script now supports a single file instead of relying on the website. + Refactoring
+- 2024-12-22: Python script now supports a single file instead of relying on the website. + Refactoring
+- 2024-12-23: Added more exercises to the conversion
 
 ### Where to find the Jefit file:
 - Go to [https://www.jefit.com/my-jefit/settings](https://www.jefit.com/my-jefit/settings) (Remember to login)
