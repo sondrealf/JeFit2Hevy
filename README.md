@@ -33,6 +33,7 @@ python3 converter.py
 - Go to the "exercises.json" file
 - Add the exercise name from Jefit and the corresponding Hevy exercise name
    - Example: "Barbell Reverse Grip (Jefit)": "Barbell Curl (Hevy)" 
+   - Feel free to add custom names also.
 
 ### Coming soon (Todos):
 - Website to convert the Jefit file to Hevy (React with Client side conversion)
