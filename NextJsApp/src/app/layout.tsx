@@ -51,6 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <meta name="google-site-verification" content="8KBjB47WDgyCfg5fvNdH76QHQ_Pt04ZymBJZGbV1SaQ" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen`}
       >
