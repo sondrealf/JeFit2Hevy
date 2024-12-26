@@ -14,7 +14,14 @@ This [Link](https://workout-converter.fly.dev/) from the Gist Repository still w
 - Click on "Data Controls"
 - Click on "Export Data"
 
-### Hot to run python script:
+### How to contribute with new/updated exercises:
+Note: Every contribution will have to be approved by the repository owner trough a pull request.
+- Go to the "exercises.json" file found in **NextJsApp/public/exercises.json**
+- Add the exercise name from Jefit and the corresponding Hevy exercise name
+   - Example: "Barbell Reverse Grip (Jefit)": "Barbell Curl (Hevy)" 
+   - Feel free to add custom names also.
+
+### Hot to run python script (inside python-script folder):
 **Prerequisites**: Make sure you have python3 installed on your machine and have pip installed packages in the requirements.txt file.
 ```bash
 pip install -r requirements.txt
@@ -29,12 +36,5 @@ python3 converter.py
 ```
 - The script will generate a file called "Hevy.csv" with the converted workouts
 
-### How to contribute with new/updated exercises:
-- Go to the "exercises.json" file
-- Add the exercise name from Jefit and the corresponding Hevy exercise name
-   - Example: "Barbell Reverse Grip (Jefit)": "Barbell Curl (Hevy)" 
-   - Feel free to add custom names also.
-
-### Coming soon (Todos):
-- Website to convert the Jefit file to Hevy (React with Client side conversion)
+### Todos:
 - Add more exercises to the conversion

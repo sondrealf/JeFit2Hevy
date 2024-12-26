@@ -90,7 +90,7 @@ def process_logs(df):
 
 
 def convert_to_hevy_format(df):
-    with open("exercises.json", "r") as file:
+    with open("../NextJsApp/public/exercises.json", "r") as file:
         mapper = json.load(file)
 
     out = pd.DataFrame()
