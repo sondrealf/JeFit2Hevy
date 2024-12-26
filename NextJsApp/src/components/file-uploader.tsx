@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, FileText, Download } from "lucide-react";
+import { Upload, FileText, Download, HelpCircle } from "lucide-react";
 import Papa from "papaparse";
 import mapper from "../../public/exercises.json";
+import { FAQ } from "./faq";
 
 export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
@@ -171,6 +172,8 @@ export function FileUploader() {
     document.body.removeChild(link);
   };
 
+  const [showFAQ, setShowFAQ] = useState(false);
+
   return (
     <Card className="w-full border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <CardContent className="p-6">
@@ -197,6 +200,16 @@ export function FileUploader() {
             )}
           </div>
         </div>
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setShowFAQ(!showFAQ)}
+            className="text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200 flex items-center justify-center mx-auto"
+          >
+            <HelpCircle size={16} className="mr-1" />
+            Need help?
+          </button>
+        </div>
+        {showFAQ && <FAQ />}
         {file && !convertedData && (
           <Button
             className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"

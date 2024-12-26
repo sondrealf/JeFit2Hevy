@@ -1,5 +1,5 @@
-import { FileUploader } from '@/components/file-uploader'
-import { Header } from '@/components/header'
+import { FileUploader } from "@/components/file-uploader";
+import { Header } from "@/components/header";
 
 export default function Home() {
   return (
@@ -11,15 +11,13 @@ export default function Home() {
             JEFIT to Hevy Converter
           </h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-            Seamlessly transform your JEFIT workout data into Hevy format. 
-            Just drag and drop your file to get started.
+            Seamlessly transform your JEFIT workout data into Hevy format.
+            Simply drag and drop your CSV file to begin the conversion process.
           </p>
           <FileUploader />
         </div>
       </main>
-      <footer className="text-center py-4 text-sm text-gray-400">
-      </footer>
+      <footer className="text-center py-4 text-sm text-gray-400"></footer>
     </div>
-  )
+  );
 }
-

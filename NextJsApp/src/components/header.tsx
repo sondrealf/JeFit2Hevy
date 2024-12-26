@@ -9,7 +9,7 @@ export function Header() {
           JEFIT2Hevy
         </Link>
         <a
-          href="https://github.com/sondrealf"
+          href="https://github.com/sondrealf/JeFit2Hevy"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2"

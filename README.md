@@ -2,12 +2,15 @@
 
 Converter from Jefit to Hevy
 
+### 🌟: Link to Jefit Hevy converter: [LINK](je-fit2-hevy.vercel.app)
+
 Updates version from Github Gist: https://gist.github.com/jfmlima/8f5e2a50b557c3a0345e217382c9d9d3
 This [Link](https://workout-converter.fly.dev/) from the Gist Repository still works, but is now outdated and does include less workouts.
 
 ### Updates after Gist Repository:
 - 2024-12-22: Python script now supports a single file instead of relying on the website. + Refactoring
 - 2024-12-23: Added more exercises to the conversion
+- 2024-12-26: Added a NextJs App to convert the Jefit file to Hevy
 
 ### Where to find the Jefit file:
 - Go to [https://www.jefit.com/my-jefit/settings](https://www.jefit.com/my-jefit/settings) (Remember to login)
