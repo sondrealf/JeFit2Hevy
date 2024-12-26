@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://jefit2hevy.vercel.app/
+
+# Sitemaps
+Sitemap: https://jefit2hevy.vercel.app/sitemap.xml
