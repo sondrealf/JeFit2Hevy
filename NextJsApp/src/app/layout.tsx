@@ -35,12 +35,21 @@ export const metadata: Metadata = {
     siteName: "Jefit to Hevy Converter",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/favicon.ico",
+        width: 32,
+        height: 32,
+        alt: "Jefit to Hevy Converter Favicon",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Migrate Your Jefit Data to Hevy - Open-Source Fitness Tool",
     description:
       "Easily transfer your Jefit workout data to Hevy with our open-source converter. Join the community on GitHub and make your fitness tracking seamless.",
+    images: ["/favicon.ico"],
   },
 };
 
@@ -51,7 +60,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <meta name="google-site-verification" content="8KBjB47WDgyCfg5fvNdH76QHQ_Pt04ZymBJZGbV1SaQ" />
+      <meta
+        name="google-site-verification"
+        content="8KBjB47WDgyCfg5fvNdH76QHQ_Pt04ZymBJZGbV1SaQ"
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen`}
       >
