@@ -1,5 +1,6 @@
 import { FileUploader } from "@/components/file-uploader";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
           <FileUploader />
         </div>
       </main>
-      <footer className="text-center py-4 text-sm text-gray-400"></footer>
+      <Footer />
     </div>
   );
 }
