@@ -133,7 +133,7 @@ export function FileUploader() {
           return {
             Date: new Date(row.mydate).toISOString(),
             "Workout Name": "Workout",
-            Duration: `${row.total_time}s`,
+            Duration: `${row.total_time ?? "0"}s`,
             "Exercise Name": mappedExerciseName,
             "Set Order": row.set_order,
             Weight: row.weight,
