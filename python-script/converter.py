@@ -68,6 +68,14 @@ def merge_dataframes(exercise_logs_df, workout_sessions_df):
     """
     Merges the exercise logs and workout sessions DataFrames.
     """
+
+    if exercise_logs_df.empty:
+        print("Warning: exercise_logs_df is empty.")
+        return None
+    elif workout_sessions_df.empty:
+        print("Warning: workout_sessions_df is empty.")
+        return None
+
     return pd.merge(
         exercise_logs_df,
         workout_sessions_df,
