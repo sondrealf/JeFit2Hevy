@@ -1,0 +1,20 @@
+[project]
+name = "JeFit2Hevy"
+version = "0.1.0"
+description = "Converter from Jefit to Hevy"
+readme = "../README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2",
+    "typer>=0.15",
+]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+jefit2hevy = "converter:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["converter.py"]
