@@ -3,9 +3,15 @@ Based on converter.py from https://gist.github.com/jfmlima/8f5e2a50b557c3a0345e2
 Adds more readability and makes it work for a single csv file
 """
 
-import pandas as pd
+import pathlib
 import csv
 import json
+from typing_extensions import Annotated
+
+import typer
+import pandas as pd
+
+app = typer.Typer()
 
 
 def read_input_file(input_file):
@@ -131,7 +137,21 @@ def save_to_csv(df, filename):
     df.to_csv(filename, index=False)
 
 
-def main(input_file, output_file):
+@app.command()
+def main(
+    input_file: Annotated[
+        pathlib.Path,
+        typer.Option(
+            "--input-file", "-i", file_okay=True, dir_okay=False, help="Input (Jefit) CSV filepath"
+        ),
+    ] = pathlib.Path("jefit.csv"),
+    output_file: Annotated[
+        pathlib.Path,
+        typer.Option(
+            "--output-file", "-o", file_okay=True, dir_okay=False, help="Output (Hevy) CSV filepath"
+        ),
+    ] = pathlib.Path("Hevy.csv"),
+):
     sections = read_input_file(input_file)
     workout_sessions_df, exercise_logs_df = create_dataframes(sections)
     merged_df = merge_dataframes(exercise_logs_df, workout_sessions_df)
@@ -141,6 +161,4 @@ def main(input_file, output_file):
 
 
 if __name__ == "__main__":
-    input_file = "jefit.csv"
-    output_file = "./Hevy.csv"
-    main(input_file, output_file)
+    app()
