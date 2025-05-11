@@ -121,6 +121,12 @@ def convert_to_hevy_format(df):
     out["Workout Notes"] = '"Sorry🫡 Script: Imported from JeFit"'
     out["RPE"] = ""
 
+    unique_jefit_exercises = set(e.strip('"') for e in out["Exercise Name"])
+    if missing_exercises := unique_jefit_exercises - set(mapper.keys()):
+        print("Warning: The following exercises are not in the mapper:")
+        for exercise in missing_exercises:
+            print(f"- {exercise!r}")
+
     out["Exercise Name"] = out["Exercise Name"].map(
         lambda x: mapper.get(x.strip('"'), x)
     )
