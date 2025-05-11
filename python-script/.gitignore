@@ -52,3 +52,8 @@ notes.txt
 Hevy.csv
 jefit.csv
 hevy*.csv
+
+.python-version
+uv.lock
+__pycache__/
+*.egg-info/
