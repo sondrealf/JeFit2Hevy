@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Azeret_Mono as Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "@/app/globals.css";
 
-const geistSans = Geist({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
-});
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -65,7 +61,7 @@ export default function RootLayout({
         content="8KBjB47WDgyCfg5fvNdH76QHQ_Pt04ZymBJZGbV1SaQ"
       />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen`}
+        className={`${inter.variable} font-sans antialiased bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen`}
       >
         {children}
         <Analytics />
