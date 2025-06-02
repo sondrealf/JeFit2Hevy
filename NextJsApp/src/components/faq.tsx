@@ -41,7 +41,13 @@ const faqItems: FAQItem[] = [
   {
     title: "Other issues?",
     content: `
-        If you encounter any issues, please create an issue on GitHub.
+        If you encounter any issues, please create an issue on GitHub - <a href="https://github.com/sondrealf/JeFit2Hevy/issues" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">https://github.com/sondrealf/JeFit2Hevy/issues</a>.
+    `,
+  },
+  {
+    title: "Contact me",
+    content: `
+        If you have any questions, please contact me on <a href="mailto:sondre.alfnes@gmail.com" class="text-blue-500 hover:underline">sondre.alfnes@gmail.com</a>.
     `,
   },
 ];

@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, FileText, Download, HelpCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  Upload,
+  FileText,
+  Download,
+  HelpCircle,
+  AlertCircle,
+} from "lucide-react";
 import Papa from "papaparse";
 import mapper from "../../public/exercises.json";
 import { FAQ } from "./faq";
@@ -12,6 +19,7 @@ import { FAQ } from "./faq";
 export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [convertedData, setConvertedData] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
@@ -45,116 +53,128 @@ export function FileUploader() {
 
   const handleConvert = () => {
     if (!file) {
-      console.error("No file selected");
+      setError("No file selected");
       return;
     }
 
+    setError(null);
     console.log("Starting conversion for file:", file.name);
 
     Papa.parse(file, {
       header: false,
       skipEmptyLines: true,
       complete: (results) => {
-        console.log("Parsing complete:", results);
+        try {
+          console.log("Parsing complete:", results);
 
-        const rows = results.data as string[][];
-        console.log("Parsed rows:", rows);
+          const rows = results.data as string[][];
+          console.log("Parsed rows:", rows);
 
-        // Parse sections
-        const sections: Record<string, any[]> = {
-          "WORKOUT SESSIONS": [],
-          "EXERCISE LOGS": [],
-        };
-        let currentSection: string | null = null;
-
-        rows.forEach((row) => {
-          const line = row[0]?.trim();
-
-          if (line.startsWith("### WORKOUT SESSIONS ###")) {
-            console.log("WORKOUT SESSIONS section found");
-            currentSection = "WORKOUT SESSIONS";
-          } else if (line.startsWith("### EXERCISE LOGS ###")) {
-            console.log("EXERCISE LOGS section found");
-            currentSection = "EXERCISE LOGS";
-          } else if (!line) {
-          } else if (line.startsWith("#")) currentSection = null;
-          else if (line && currentSection) sections[currentSection].push(row);
-        });
-
-        console.log("Organized sections:", sections);
-
-        // Create DataFrames
-        const [wsHeader, ...wsRows] = sections["WORKOUT SESSIONS"];
-        const [elHeader, ...elRows] = sections["EXERCISE LOGS"];
-
-        if (!wsHeader || !elHeader) {
-          console.error("Missing headers for one or both sections");
-          return;
-        }
-
-        console.log("Workout Sessions Header:", wsHeader);
-        console.log("Exercise Logs Header:", elHeader);
-
-        const workoutSessions = wsRows.map((row) =>
-          wsHeader.reduce((acc: any, col: string, idx: number) => {
-            acc[col] = row[idx];
-            return acc;
-          }, {})
-        );
-        const exerciseLogs = elRows.map((row) =>
-          elHeader.reduce((acc: any, col: string, idx: number) => {
-            acc[col] = row[idx];
-            return acc;
-          }, {})
-        );
-
-        console.log("Workout Sessions Data:", workoutSessions);
-        console.log("Exercise Logs Data:", exerciseLogs);
-
-        // Merge and process
-        const merged = exerciseLogs.map((log) => {
-          const session =
-            workoutSessions.find((ws) => ws._id === log.belongsession) || {};
-          return { ...log, ...session };
-        });
-
-        console.log("Merged Data:", merged);
-
-        const processed = processLogs(merged);
-
-        console.log("Processed Logs:", processed);
-
-        // Convert to Hevy format
-        const hevyData = processed.map((row: any) => {
-          const exerciseName = row.ename.trim('"');
-          const mappedExerciseName =
-            mapper[exerciseName as keyof typeof mapper] || exerciseName;
-
-          return {
-            Date: new Date(row.mydate).toISOString(),
-            "Workout Name": "Workout",
-            Duration: `${row.total_time ?? "0"}s`,
-            "Exercise Name": mappedExerciseName,
-            "Set Order": row.set_order,
-            Weight: row.weight,
-            Reps: row.reps,
-            Distance: 0,
-            Seconds: 0,
-            Notes: "",
-            "Workout Notes": "Sorry🫡 Script: Imported from JeFit",
-            RPE: "",
+          // Parse sections
+          const sections: Record<string, any[]> = {
+            "WORKOUT SESSIONS": [],
+            "EXERCISE LOGS": [],
           };
-        });
+          let currentSection: string | null = null;
 
-        console.log("Converted to Hevy format:", hevyData);
+          rows.forEach((row) => {
+            const line = row[0]?.trim();
 
-        // Convert to CSV
-        const csv = Papa.unparse(hevyData);
-        console.log("Final CSV:", csv);
-        setConvertedData(csv);
+            if (line.startsWith("### WORKOUT SESSIONS ###")) {
+              console.log("WORKOUT SESSIONS section found");
+              currentSection = "WORKOUT SESSIONS";
+            } else if (line.startsWith("### EXERCISE LOGS ###")) {
+              console.log("EXERCISE LOGS section found");
+              currentSection = "EXERCISE LOGS";
+            } else if (!line) {
+            } else if (line.startsWith("#")) currentSection = null;
+            else if (line && currentSection) sections[currentSection].push(row);
+          });
+
+          console.log("Organized sections:", sections);
+
+          // Create DataFrames
+          const [wsHeader, ...wsRows] = sections["WORKOUT SESSIONS"];
+          const [elHeader, ...elRows] = sections["EXERCISE LOGS"];
+
+          if (!wsHeader || !elHeader) {
+            throw new Error("Missing headers for one or both sections");
+          }
+
+          console.log("Workout Sessions Header:", wsHeader);
+          console.log("Exercise Logs Header:", elHeader);
+
+          const workoutSessions = wsRows.map((row) =>
+            wsHeader.reduce((acc: any, col: string, idx: number) => {
+              acc[col] = row[idx];
+              return acc;
+            }, {})
+          );
+          const exerciseLogs = elRows.map((row) =>
+            elHeader.reduce((acc: any, col: string, idx: number) => {
+              acc[col] = row[idx];
+              return acc;
+            }, {})
+          );
+
+          console.log("Workout Sessions Data:", workoutSessions);
+          console.log("Exercise Logs Data:", exerciseLogs);
+
+          // Merge and process
+          const merged = exerciseLogs.map((log) => {
+            const session =
+              workoutSessions.find((ws) => ws._id === log.belongsession) || {};
+            return { ...log, ...session };
+          });
+
+          console.log("Merged Data:", merged);
+
+          const processed = processLogs(merged);
+
+          console.log("Processed Logs:", processed);
+
+          // Convert to Hevy format
+          const hevyData = processed.map((row: any) => {
+            const exerciseName = row.ename.trim('"');
+            const mappedExerciseName =
+              mapper[exerciseName as keyof typeof mapper] || exerciseName;
+
+            return {
+              Date: new Date(row.mydate).toISOString(),
+              "Workout Name": "Workout",
+              Duration: `${row.total_time ?? "0"}s`,
+              "Exercise Name": mappedExerciseName,
+              "Set Order": row.set_order,
+              Weight: row.weight,
+              Reps: row.reps,
+              Distance: 0,
+              Seconds: 0,
+              Notes: "",
+              "Workout Notes": "Sorry🫡 Script: Imported from JeFit",
+              RPE: "",
+            };
+          });
+
+          console.log("Converted to Hevy format:", hevyData);
+
+          // Convert to CSV
+          const csv = Papa.unparse(hevyData);
+          console.log("Final CSV:", csv);
+          setConvertedData(csv);
+        } catch (err) {
+          console.error("Error during conversion:", err);
+          setError(
+            err instanceof Error
+              ? err.message
+              : "An error occurred during conversion"
+          );
+        }
       },
       error: (error) => {
         console.error("Error parsing CSV:", error);
+        setError(
+          "Failed to parse CSV file. Please make sure it's a valid JeFit export."
+        );
       },
     });
   };
@@ -200,13 +220,20 @@ export function FileUploader() {
             )}
           </div>
         </div>
+        {error && (
+          <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center">
+            <AlertCircle className="mr-2" size={20} />
+            {error +
+              ", re-upload the file and try again. Else you can check the FAQ section below or contact me"}
+          </div>
+        )}
         <div className="mt-4 text-center">
           <button
             onClick={() => setShowFAQ(!showFAQ)}
             className="text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200 flex items-center justify-center mx-auto"
           >
             <HelpCircle size={16} className="mr-1" />
-            Need help?
+            Need help? / FAQ
           </button>
         </div>
         {showFAQ && <FAQ />}
