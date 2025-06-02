@@ -20,6 +20,29 @@ export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [convertedData, setConvertedData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [isConverting, setIsConverting] = useState(false);
+  const ANIMATION_DURATION = 1000; // 1 seconds total duration
+  const ANIMATION_STEPS = {
+    PARSING: 20,
+    SECTIONS: 40,
+    HEADERS: 60,
+    PROCESSING: 80,
+    COMPLETE: 100
+  };
+
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const animateProgress = async (start: number, end: number, duration: number) => {
+    const steps = 20; // Number of steps in the animation
+    const stepDuration = duration / steps;
+    const increment = (end - start) / steps;
+
+    for (let i = 0; i <= steps; i++) {
+      setProgress(Math.round(start + (increment * i)));
+      await sleep(stepDuration);
+    }
+  };
 
   const onDrop = (acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
@@ -58,17 +81,22 @@ export function FileUploader() {
     }
 
     setError(null);
+    setIsConverting(true);
+    setProgress(0);
     console.log("Starting conversion for file:", file.name);
 
     Papa.parse(file, {
       header: false,
       skipEmptyLines: true,
-      complete: (results) => {
+      complete: async (results) => {
         try {
           console.log("Parsing complete:", results);
 
           const rows = results.data as string[][];
           console.log("Parsed rows:", rows);
+
+          // Start the progress animation
+          animateProgress(0, ANIMATION_STEPS.PARSING, ANIMATION_DURATION * 0.2);
 
           // Parse sections
           const sections: Record<string, any[]> = {
@@ -91,6 +119,7 @@ export function FileUploader() {
             else if (line && currentSection) sections[currentSection].push(row);
           });
 
+          await animateProgress(ANIMATION_STEPS.PARSING, ANIMATION_STEPS.SECTIONS, ANIMATION_DURATION * 0.2);
           console.log("Organized sections:", sections);
 
           // Create DataFrames
@@ -101,6 +130,7 @@ export function FileUploader() {
             throw new Error("Missing headers for one or both sections");
           }
 
+          await animateProgress(ANIMATION_STEPS.SECTIONS, ANIMATION_STEPS.HEADERS, ANIMATION_DURATION * 0.2);
           console.log("Workout Sessions Header:", wsHeader);
           console.log("Exercise Logs Header:", elHeader);
 
@@ -117,6 +147,7 @@ export function FileUploader() {
             }, {})
           );
 
+          await animateProgress(ANIMATION_STEPS.HEADERS, ANIMATION_STEPS.PROCESSING, ANIMATION_DURATION * 0.2);
           console.log("Workout Sessions Data:", workoutSessions);
           console.log("Exercise Logs Data:", exerciseLogs);
 
@@ -160,7 +191,11 @@ export function FileUploader() {
           // Convert to CSV
           const csv = Papa.unparse(hevyData);
           console.log("Final CSV:", csv);
+
+          await animateProgress(ANIMATION_STEPS.PROCESSING, ANIMATION_STEPS.COMPLETE, ANIMATION_DURATION * 0.2);
+          setIsConverting(false);
           setConvertedData(csv);
+
         } catch (err) {
           console.error("Error during conversion:", err);
           setError(
@@ -168,6 +203,8 @@ export function FileUploader() {
               ? err.message
               : "An error occurred during conversion"
           );
+          setIsConverting(false);
+          setProgress(0);
         }
       },
       error: (error) => {
@@ -175,6 +212,8 @@ export function FileUploader() {
         setError(
           "Failed to parse CSV file. Please make sure it's a valid JeFit export."
         );
+        setIsConverting(false);
+        setProgress(0);
       },
     });
   };
@@ -238,12 +277,23 @@ export function FileUploader() {
         </div>
         {showFAQ && <FAQ />}
         {file && !convertedData && (
-          <Button
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={handleConvert}
-          >
-            Convert to Hevy
-          </Button>
+          <>
+            <Button
+              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={handleConvert}
+              disabled={isConverting}
+            >
+              {isConverting ? "Converting..." : "Convert to Hevy"}
+            </Button>
+            {isConverting && (
+              <div className="mt-4">
+                <Progress value={progress} className="w-full" />
+                <p className="text-sm text-gray-400 mt-2 text-center">
+                  Converting... {progress}%
+                </p>
+              </div>
+            )}
+          </>
         )}
         {convertedData && (
           <Button
