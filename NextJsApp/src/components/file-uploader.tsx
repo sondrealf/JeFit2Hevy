@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,10 +11,12 @@ import {
   Download,
   HelpCircle,
   AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 import Papa from "papaparse";
 import mapper from "../../public/exercises.json";
 import { FAQ } from "./faq";
+import { PaymentComponent } from "./payment";
 
 export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
@@ -22,24 +24,31 @@ export function FileUploader() {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [isBypassEnabled, setIsBypassEnabled] = useState(false);
   const ANIMATION_DURATION = 1000; // 1 seconds total duration
   const ANIMATION_STEPS = {
     PARSING: 20,
     SECTIONS: 40,
     HEADERS: 60,
     PROCESSING: 80,
-    COMPLETE: 100
+    COMPLETE: 100,
   };
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
-  const animateProgress = async (start: number, end: number, duration: number) => {
+  const animateProgress = async (
+    start: number,
+    end: number,
+    duration: number
+  ) => {
     const steps = 20; // Number of steps in the animation
     const stepDuration = duration / steps;
     const increment = (end - start) / steps;
 
     for (let i = 0; i <= steps; i++) {
-      setProgress(Math.round(start + (increment * i)));
+      setProgress(Math.round(start + increment * i));
       await sleep(stepDuration);
     }
   };
@@ -119,7 +128,11 @@ export function FileUploader() {
             else if (line && currentSection) sections[currentSection].push(row);
           });
 
-          await animateProgress(ANIMATION_STEPS.PARSING, ANIMATION_STEPS.SECTIONS, ANIMATION_DURATION * 0.2);
+          await animateProgress(
+            ANIMATION_STEPS.PARSING,
+            ANIMATION_STEPS.SECTIONS,
+            ANIMATION_DURATION * 0.2
+          );
           console.log("Organized sections:", sections);
 
           // Create DataFrames
@@ -127,10 +140,16 @@ export function FileUploader() {
           const [elHeader, ...elRows] = sections["EXERCISE LOGS"];
 
           if (!wsHeader || !elHeader) {
-            throw new Error("Missing headers for one or both sections");
+            throw new Error(
+              "Missing headers for one or both sections, re-upload the file and try again. Else you can check the FAQ section below or contact me"
+            );
           }
 
-          await animateProgress(ANIMATION_STEPS.SECTIONS, ANIMATION_STEPS.HEADERS, ANIMATION_DURATION * 0.2);
+          await animateProgress(
+            ANIMATION_STEPS.SECTIONS,
+            ANIMATION_STEPS.HEADERS,
+            ANIMATION_DURATION * 0.2
+          );
           console.log("Workout Sessions Header:", wsHeader);
           console.log("Exercise Logs Header:", elHeader);
 
@@ -147,7 +166,11 @@ export function FileUploader() {
             }, {})
           );
 
-          await animateProgress(ANIMATION_STEPS.HEADERS, ANIMATION_STEPS.PROCESSING, ANIMATION_DURATION * 0.2);
+          await animateProgress(
+            ANIMATION_STEPS.HEADERS,
+            ANIMATION_STEPS.PROCESSING,
+            ANIMATION_DURATION * 0.2
+          );
           console.log("Workout Sessions Data:", workoutSessions);
           console.log("Exercise Logs Data:", exerciseLogs);
 
@@ -163,6 +186,19 @@ export function FileUploader() {
           const processed = processLogs(merged);
 
           console.log("Processed Logs:", processed);
+
+          // Check for oldest date
+          const oldestDate = new Date(
+            Math.min(...processed.map((row) => new Date(row.mydate).getTime()))
+          );
+          const thresholdAgo = new Date();
+          thresholdAgo.setFullYear(thresholdAgo.getFullYear() - 3);
+
+          if (oldestDate < thresholdAgo && !isBypassEnabled) {
+            setIsConverting(false);
+            setShowPayment(true);
+            return;
+          }
 
           // Convert to Hevy format
           const hevyData = processed.map((row: any) => {
@@ -192,10 +228,13 @@ export function FileUploader() {
           const csv = Papa.unparse(hevyData);
           console.log("Final CSV:", csv);
 
-          await animateProgress(ANIMATION_STEPS.PROCESSING, ANIMATION_STEPS.COMPLETE, ANIMATION_DURATION * 0.2);
+          await animateProgress(
+            ANIMATION_STEPS.PROCESSING,
+            ANIMATION_STEPS.COMPLETE,
+            ANIMATION_DURATION * 0.2
+          );
           setIsConverting(false);
           setConvertedData(csv);
-
         } catch (err) {
           console.error("Error during conversion:", err);
           setError(
@@ -233,75 +272,90 @@ export function FileUploader() {
 
   const [showFAQ, setShowFAQ] = useState(false);
 
+  useEffect(() => {
+    setIsBypassEnabled(window.location.href.includes("bypass-je.fit"));
+  }, []);
+
   return (
     <Card className="w-full border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <CardContent className="p-6">
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200 ${
-            isDragActive
-              ? "border-blue-500 bg-blue-500/10"
-              : "border-gray-600 hover:border-gray-500 hover:bg-gray-700/50"
-          }`}
-        >
-          <input {...getInputProps()} />
-          <div className="flex flex-col items-center space-y-4">
-            <Upload size={40} className="text-gray-400" />
-            {file ? (
-              <p className="text-lg">
-                <FileText className="inline mr-2" size={20} />
-                {file.name}
-              </p>
-            ) : (
-              <p className="text-lg">
-                Drag & drop a CSV file here, or click to select a file
-              </p>
-            )}
-          </div>
-        </div>
-        {error && (
-          <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center">
-            <AlertCircle className="mr-2" size={20} />
-            {error +
-              ", re-upload the file and try again. Else you can check the FAQ section below or contact me"}
-          </div>
-        )}
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => setShowFAQ(!showFAQ)}
-            className="text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200 flex items-center justify-center mx-auto"
-          >
-            <HelpCircle size={16} className="mr-1" />
-            Need help? / FAQ
-          </button>
-        </div>
-        {showFAQ && <FAQ />}
-        {file && !convertedData && (
+        {showPayment ? (
+          <PaymentComponent />
+        ) : (
           <>
-            <Button
-              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={handleConvert}
-              disabled={isConverting}
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200 ${
+                isDragActive
+                  ? "border-blue-500 bg-blue-500/10"
+                  : "border-gray-600 hover:border-gray-500 hover:bg-gray-700/50"
+              }`}
             >
-              {isConverting ? "Converting..." : "Convert to Hevy"}
-            </Button>
-            {isConverting && (
-              <div className="mt-4">
-                <Progress value={progress} className="w-full" />
-                <p className="text-sm text-gray-400 mt-2 text-center">
-                  Converting... {progress}%
-                </p>
+              <input {...getInputProps()} />
+              <div className="flex flex-col items-center space-y-4">
+                <Upload size={40} className="text-gray-400" />
+                {file ? (
+                  <p className="text-lg">
+                    <FileText className="inline mr-2" size={20} />
+                    {file.name}
+                  </p>
+                ) : (
+                  <p className="text-lg">
+                    Drag & drop a CSV file here, or click to select a file
+                  </p>
+                )}
+              </div>
+            </div>
+            {error && (
+              <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center">
+                <AlertCircle className="mr-2" size={20} />
+                {error}
               </div>
             )}
+            {isBypassEnabled && (
+              <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 flex items-center">
+                <CheckCircle className="mr-2" size={20} />
+                Purchase confirmed successfully! You can now convert your file. Do not forget to download it after conversion.
+              </div>
+            )}
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowFAQ(!showFAQ)}
+                className="text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200 flex items-center justify-center mx-auto"
+              >
+                <HelpCircle size={16} className="mr-1" />
+                Need help? / FAQ
+              </button>
+            </div>
+            {showFAQ && <FAQ />}
+            {file && !convertedData && (
+              <>
+                <Button
+                  className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={handleConvert}
+                  disabled={isConverting}
+                >
+                  {isConverting ? "Converting..." : "Convert to Hevy"}
+                </Button>
+                {isConverting && (
+                  <div className="mt-4">
+                    <Progress value={progress} className="w-full" />
+                    <p className="text-sm text-gray-400 mt-2 text-center">
+                      Converting... {progress}%
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+            {convertedData && (
+              <Button
+                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleDownload}
+              >
+                <Download className="mr-2" size={20} /> Download Converted File
+              </Button>
+            )}
           </>
-        )}
-        {convertedData && (
-          <Button
-            className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
-            onClick={handleDownload}
-          >
-            <Download className="mr-2" size={20} /> Download Converted File
-          </Button>
         )}
       </CardContent>
     </Card>

@@ -12,6 +12,7 @@ This [Link](https://workout-converter.fly.dev/) from the Gist Repository still w
 - 2024-12-23: Added more exercises to the conversion
 - 2024-12-26: Added a NextJs App to convert the Jefit file to Hevy
 - 2025-05-05: Refactor python script to use Typer
+- 2025-06-02: Updated version to NextJs
 
 ### Where to find the Jefit file:
 - Go to [https://www.jefit.com/my-jefit/settings](https://www.jefit.com/my-jefit/settings) (Remember to login)
