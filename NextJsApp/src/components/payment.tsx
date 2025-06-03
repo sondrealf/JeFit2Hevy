@@ -4,17 +4,24 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { loadStripe } from "@stripe/stripe-js";
+import { X } from "lucide-react";
 
 // Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
-export function PaymentComponent() {
+interface PaymentComponentProps {
+  setShowPayment: (show: boolean) => void;
+}
+
+export function PaymentComponent({ setShowPayment }: PaymentComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
     try {
       setIsLoading(true);
-      
+
       // Create a checkout session
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -27,7 +34,7 @@ export function PaymentComponent() {
       });
 
       const { sessionId } = await response.json();
-      
+
       // Redirect to Stripe Checkout
       const stripe = await stripePromise;
       const { error } = await stripe!.redirectToCheckout({
@@ -48,9 +55,21 @@ export function PaymentComponent() {
     <Card className="w-full border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <CardContent className="p-6">
         <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold">Unlock Full Access</h2>
+          <div className="flex justify-between items-center relative">
+            <div className="w-6" /> {/* Spacer for balance */}
+            <h2 className="text-xl font-semibold absolute left-1/2 -translate-x-1/2">
+              Unlock Full Access
+            </h2>
+            <button
+              onClick={() => setShowPayment(false)}
+              className="text-gray-400 hover:text-gray-300 transition-colors duration-200"
+            >
+              <X size={20} />
+            </button>
+          </div>
           <p className="text-gray-400">
-            Your workout history is older than 3 years. Pay a small fee to process your complete workout history.
+            Your workout history is older than 3 years or you want to remove
+            watermark. Pay a small fee to process your complete workout history.
           </p>
           <p className="text-2xl font-bold">$3.99</p>
           <Button
@@ -64,4 +83,4 @@ export function PaymentComponent() {
       </CardContent>
     </Card>
   );
-} 
+}

@@ -209,7 +209,9 @@ export function FileUploader() {
 
             return {
               Date: new Date(row.mydate).toISOString(),
-              "Workout Name": "Workout",
+              "Workout Name": `Workout ${
+                isBypassEnabled ? "" : "from jefit2hevy.vercel.app"
+              }`,
               Duration: `${row.total_time ?? "0"}s`,
               "Exercise Name": mappedExerciseName,
               "Set Order": row.set_order,
@@ -218,7 +220,9 @@ export function FileUploader() {
               Distance: 0,
               Seconds: 0,
               Notes: "",
-              "Workout Notes": "Sorry🫡 Script: Imported from JeFit",
+              "Workout Notes": `Script: Imported from JeFit ${
+                isBypassEnabled ? "" : ", Link: https://jefit2hevy.vercel.app/"
+              }`,
               RPE: "",
             };
           });
@@ -301,7 +305,7 @@ export function FileUploader() {
     <Card className="w-full border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <CardContent className="p-6">
         {showPayment ? (
-          <PaymentComponent />
+          <PaymentComponent setShowPayment={setShowPayment} />
         ) : (
           <>
             <div
@@ -370,12 +374,23 @@ export function FileUploader() {
               </>
             )}
             {convertedData && (
-              <Button
-                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
-                onClick={handleDownload}
-              >
-                <Download className="mr-2" size={20} /> Download Converted File
-              </Button>
+              <>
+                <Button
+                  className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
+                  onClick={handleDownload}
+                >
+                  <Download className="mr-2" size={20} /> Download Converted
+                  File
+                </Button>
+                {!isBypassEnabled && (
+                  <button
+                    onClick={() => setShowPayment(true)}
+                    className="w-full mt-2 text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                  >
+                    Want to remove watermark?
+                  </button>
+                )}
+              </>
             )}
           </>
         )}
