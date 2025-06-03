@@ -17,6 +17,7 @@ import Papa from "papaparse";
 import mapper from "../../public/exercises.json";
 import { FAQ } from "./faq";
 import { PaymentComponent } from "./payment";
+import crypto from "crypto";
 
 export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
@@ -273,7 +274,27 @@ export function FileUploader() {
   const [showFAQ, setShowFAQ] = useState(false);
 
   useEffect(() => {
-    setIsBypassEnabled(window.location.href.includes("bypass-je.fit"));
+    const checkEncryption = () => {
+      const encryptionKey = "ciciciakkakaskdkasd";
+
+      // Get dates for the past week
+      const dates = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toISOString().split("T")[0];
+      });
+
+      // Check if any of the past week's encrypted dates are in the URL
+      return dates.some((date) => {
+        const encryptedDate = crypto
+          .createHmac("sha256", encryptionKey)
+          .update(date)
+          .digest("hex");
+        return window.location.href.includes(encryptedDate);
+      });
+    };
+
+    setIsBypassEnabled(checkEncryption());
   }, []);
 
   return (
@@ -315,7 +336,8 @@ export function FileUploader() {
             {isBypassEnabled && (
               <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 flex items-center">
                 <CheckCircle className="mr-2" size={20} />
-                Purchase confirmed successfully! You can now convert your file. Do not forget to download it after conversion.
+                Purchase confirmed successfully! You can now convert your file.
+                Do not forget to download it after conversion.
               </div>
             )}
             <div className="mt-4 text-center">

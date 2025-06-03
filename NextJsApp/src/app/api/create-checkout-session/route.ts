@@ -1,11 +1,24 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import crypto from 'crypto';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const encryptDate = () => {
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const encryptionKey = 'ciciciakkakaskdkasd';
+  
+  // Create SHA-256 hash of the date using the key
+  return crypto
+    .createHmac('sha256', encryptionKey)
+    .update(today)
+    .digest('hex');
+};
 
 export async function POST(request: Request) {
   try {
     const { successUrl } = await request.json();
+    const encryptedDate = encryptDate();
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -23,7 +36,7 @@ export async function POST(request: Request) {
         },
       ],
       mode: "payment",
-      success_url: successUrl + "?bypass-je.fit",
+      success_url: `${successUrl}?${encryptedDate}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
     });
 
