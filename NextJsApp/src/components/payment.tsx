@@ -68,7 +68,7 @@ export function PaymentComponent({ setShowPayment }: PaymentComponentProps) {
             </button>
           </div>
           <p className="text-gray-400">
-            Your workout history is older than 3 years or you want to remove
+            Your workout history is older than 2 years or you want to remove
             watermark. Pay a small fee to process your complete workout history.
           </p>
           <p className="text-2xl font-bold">$3.99</p>

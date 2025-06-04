@@ -193,7 +193,7 @@ export function FileUploader() {
             Math.min(...processed.map((row) => new Date(row.mydate).getTime()))
           );
           const thresholdAgo = new Date();
-          thresholdAgo.setFullYear(thresholdAgo.getFullYear() - 3);
+          thresholdAgo.setFullYear(thresholdAgo.getFullYear() - 2);
 
           if (oldestDate < thresholdAgo && !isBypassEnabled) {
             setIsConverting(false);
