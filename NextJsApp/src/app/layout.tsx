@@ -60,6 +60,22 @@ export default function RootLayout({
         name="google-site-verification"
         content="8KBjB47WDgyCfg5fvNdH76QHQ_Pt04ZymBJZGbV1SaQ"
       />
+      {/* Google Analytics 4 */}
+      <script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${"G-BV1G6V4860"}`}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-BV1G6V4860');
+          `,
+        }}
+      />
+
       <body
         className={`${inter.variable} font-sans antialiased bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen`}
       >

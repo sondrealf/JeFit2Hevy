@@ -26,6 +26,7 @@ export function FileUploader() {
   const [progress, setProgress] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [age, setAge] = useState<string | undefined>(undefined);
   const [isBypassEnabled, setIsBypassEnabled] = useState(false);
   const ANIMATION_DURATION = 1000; // 1 seconds total duration
   const ANIMATION_STEPS = {
@@ -192,10 +193,42 @@ export function FileUploader() {
           const oldestDate = new Date(
             Math.min(...processed.map((row) => new Date(row.mydate).getTime()))
           );
-          const thresholdAgo = new Date();
-          thresholdAgo.setFullYear(thresholdAgo.getFullYear() - 2);
 
-          if (oldestDate < thresholdAgo && !isBypassEnabled) {
+          const oneYearAgo = new Date();
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+          if (oldestDate < oneYearAgo) {
+            setAge("1");
+          }
+
+          const twoYearsAgo = new Date();
+          twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+          if (oldestDate < twoYearsAgo) {
+            setAge("2");
+          }
+
+          const threeYearsAgo = new Date();
+          threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+
+          if (oldestDate < threeYearsAgo) {
+            setAge("3");
+          }
+
+          const fourYearsAgo = new Date();
+          fourYearsAgo.setFullYear(fourYearsAgo.getFullYear() - 4);
+
+          if (oldestDate < fourYearsAgo) {
+            setAge("4");
+          }
+
+          const fiveYearsAgo = new Date();
+          fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+
+          if (oldestDate < fiveYearsAgo) {
+            setAge("5");
+          }
+
+          if (oldestDate < oneYearAgo && !isBypassEnabled) {
             setIsConverting(false);
             setShowPayment(true);
             return;
@@ -305,7 +338,7 @@ export function FileUploader() {
     <Card className="w-full border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <CardContent className="p-6">
         {showPayment ? (
-          <PaymentComponent setShowPayment={setShowPayment} />
+          <PaymentComponent setShowPayment={setShowPayment} age={age} />
         ) : (
           <>
             <div

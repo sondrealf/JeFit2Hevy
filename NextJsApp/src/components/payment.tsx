@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { loadStripe } from "@stripe/stripe-js";
@@ -13,14 +13,36 @@ const stripePromise = loadStripe(
 
 interface PaymentComponentProps {
   setShowPayment: (show: boolean) => void;
+  age?: string;
 }
 
-export function PaymentComponent({ setShowPayment }: PaymentComponentProps) {
+export function PaymentComponent({
+  setShowPayment,
+  age,
+}: PaymentComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Track when payment component is shown
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'payment_component_shown', {
+        'event_category': 'Payment',
+        'event_label': `Age: ${age || 'unknown'}`
+      });
+    }
+  }, [age]);
 
   const handlePayment = async () => {
     try {
       setIsLoading(true);
+
+      // Track payment initiation
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'payment_initiated', {
+          'event_category': 'Payment',
+          'event_label': `Age: ${age || 'unknown'}`
+        });
+      }
 
       // Create a checkout session
       const response = await fetch("/api/create-checkout-session", {
@@ -43,9 +65,23 @@ export function PaymentComponent({ setShowPayment }: PaymentComponentProps) {
 
       if (error) {
         console.error("Payment error:", error);
+        // Track payment error
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'payment_error', {
+            'event_category': 'Payment',
+            'event_label': error.message
+          });
+        }
       }
     } catch (err) {
       console.error("Error:", err);
+      // Track general error
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'payment_error', {
+          'event_category': 'Payment',
+          'event_label': err instanceof Error ? err.message : 'Unknown error'
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -68,10 +104,11 @@ export function PaymentComponent({ setShowPayment }: PaymentComponentProps) {
             </button>
           </div>
           <p className="text-gray-400">
-            Your workout history is older than 2 years or you want to remove
-            watermark. Pay a small fee to process your complete workout history.
+            Your workout history is older than {age ?? "2"} years or you want to
+            remove watermark. Pay a small fee to process your complete workout
+            history.
           </p>
-          <p className="text-2xl font-bold">$3.99</p>
+          <p className="text-2xl font-bold">$2.99</p>
           <Button
             onClick={handlePayment}
             disabled={isLoading}

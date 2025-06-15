@@ -30,7 +30,7 @@ export async function POST(request: Request) {
               name: "JeFit to Hevy Full Access",
               description: "Process your complete workout history",
             },
-            unit_amount: 399, // $3.99
+            unit_amount: 299, // $2.99
           },
           quantity: 1,
         },
