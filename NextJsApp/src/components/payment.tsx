@@ -24,11 +24,20 @@ export function PaymentComponent({
 
   // Track when payment component is shown
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'payment_component_shown', {
-        'event_category': 'Payment',
-        'event_label': `Age: ${age || 'unknown'}`
-      });
+    if (typeof window !== 'undefined') {
+      // Google Analytics tracking
+      if (window.gtag) {
+        window.gtag('event', 'payment_component_shown', {
+          'event_category': 'Payment',
+          'event_label': `Age: ${age || 'unknown'}`
+        });
+      }
+      // Clarity tracking
+      if (window.clarity) {
+        window.clarity("set", "payment_component_shown", {
+          age: age || 'unknown'
+        });
+      }
     }
   }, [age]);
 
@@ -37,11 +46,20 @@ export function PaymentComponent({
       setIsLoading(true);
 
       // Track payment initiation
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'payment_initiated', {
-          'event_category': 'Payment',
-          'event_label': `Age: ${age || 'unknown'}`
-        });
+      if (typeof window !== 'undefined') {
+        // Google Analytics tracking
+        if (window.gtag) {
+          window.gtag('event', 'payment_initiated', {
+            'event_category': 'Payment',
+            'event_label': `Age: ${age || 'unknown'}`
+          });
+        }
+        // Clarity tracking
+        if (window.clarity) {
+          window.clarity("set", "payment_initiated", {
+            age: age || 'unknown'
+          });
+        }
       }
 
       // Create a checkout session
@@ -66,21 +84,39 @@ export function PaymentComponent({
       if (error) {
         console.error("Payment error:", error);
         // Track payment error
-        if (typeof window !== 'undefined' && window.gtag) {
-          window.gtag('event', 'payment_error', {
-            'event_category': 'Payment',
-            'event_label': error.message
-          });
+        if (typeof window !== 'undefined') {
+          // Google Analytics tracking
+          if (window.gtag) {
+            window.gtag('event', 'payment_error', {
+              'event_category': 'Payment',
+              'event_label': error.message
+            });
+          }
+          // Clarity tracking
+          if (window.clarity) {
+            window.clarity("set", "payment_error", {
+              error: error.message
+            });
+          }
         }
       }
     } catch (err) {
       console.error("Error:", err);
       // Track general error
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'payment_error', {
-          'event_category': 'Payment',
-          'event_label': err instanceof Error ? err.message : 'Unknown error'
-        });
+      if (typeof window !== 'undefined') {
+        // Google Analytics tracking
+        if (window.gtag) {
+          window.gtag('event', 'payment_error', {
+            'event_category': 'Payment',
+            'event_label': err instanceof Error ? err.message : 'Unknown error'
+          });
+        }
+        // Clarity tracking
+        if (window.clarity) {
+          window.clarity("set", "payment_error", {
+            error: err instanceof Error ? err.message : 'Unknown error'
+          });
+        }
       }
     } finally {
       setIsLoading(false);
