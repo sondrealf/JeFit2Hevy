@@ -240,8 +240,36 @@ export function FileUploader() {
             const mappedExerciseName =
               mapper[exerciseName as keyof typeof mapper] || exerciseName;
 
+            // Use starttime (Unix timestamp) if available for accurate time, otherwise fallback to mydate
+            let workoutDate: Date;
+            if (row.starttime && !isNaN(parseInt(row.starttime))) {
+              // starttime is a Unix timestamp in seconds
+              workoutDate = new Date(parseInt(row.starttime) * 1000);
+            } else {
+              workoutDate = new Date(row.mydate);
+            }
+
+            // Format date with timezone offset instead of UTC
+            const formatDateWithTimezone = (date: Date): string => {
+              const pad = (n: number) => n.toString().padStart(2, '0');
+              const year = date.getFullYear();
+              const month = pad(date.getMonth() + 1);
+              const day = pad(date.getDate());
+              const hours = pad(date.getHours());
+              const minutes = pad(date.getMinutes());
+              const seconds = pad(date.getSeconds());
+
+              // Get timezone offset in hours and minutes
+              const tzOffset = -date.getTimezoneOffset();
+              const tzSign = tzOffset >= 0 ? '+' : '-';
+              const tzHours = pad(Math.floor(Math.abs(tzOffset) / 60));
+              const tzMinutes = pad(Math.abs(tzOffset) % 60);
+
+              return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${tzSign}${tzHours}:${tzMinutes}`;
+            };
+
             return {
-              Date: new Date(row.mydate).toISOString(),
+              Date: formatDateWithTimezone(workoutDate),
               "Workout Name": `Workout ${
                 isBypassEnabled ? "" : "from jefit2hevy.vercel.app"
               }`,
